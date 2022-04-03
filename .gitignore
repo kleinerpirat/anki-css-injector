@@ -1,0 +1,15 @@
+# General
+.DS_Store
+zipped
+
+# Anki
+meta.json
+*.ankiaddon
+
+# Python
+__pycache__
+*.pyc
+
+# NPM / Typescript 
+node_modules
+yarn-error.log

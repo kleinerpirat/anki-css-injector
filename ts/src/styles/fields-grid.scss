@@ -1,0 +1,8 @@
+@use "helpers";
+
+$size: 1fr;
+
+.fields {
+    /* This targets editor/Fields.svelte in the Anki repo */
+    @include helpers.cols(2, $size);
+}
