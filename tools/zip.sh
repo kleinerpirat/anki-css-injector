@@ -8,4 +8,4 @@ mkdir -p "$DIR/zipped"
 
 cd "$DIR/dist"
 
-zip -r "$DIR/zipped/addon.ankiaddon" *
+zip -r "$DIR/zipped/css-injector.ankiaddon" *
