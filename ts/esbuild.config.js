@@ -1,8 +1,5 @@
 const fs = require("fs");
 const { build } = require("esbuild");
-const sveltePreprocess = require("svelte-preprocess");
-const sveltePlugin = require("esbuild-svelte");
-const sassPlugin = require("esbuild-sass-plugin").default;
 
 for (const dir of ["../dist", "../dist/web"]) {
     if (!fs.existsSync(dir)) {
@@ -31,16 +28,20 @@ const watch = development
       }
     : false;
 
-/**
- * This should point to all entry points for JS add-ons.
- * Each one will create one js and one css file in `../src/dist/web'
- */
-const entryPoints = ["src/editor.ts"];
+
+
+const cssDir = `src/styles/${production ? "test" : "test"}`
 
 /**
- * Esbuild build options
- * See https://esbuild.github.io/api/#build-api for more
+ * Stylesheets for user_files
  */
+build({
+    entryPoints: [`${cssDir}/editor.css`, `${cssDir}/field.css`],
+    outdir: "../dist/user_files",
+});
+
+const entryPoints = ["src/injector.ts"];
+
 const options = {
     entryPoints,
     outdir: "../dist/web",
@@ -52,17 +53,7 @@ const options = {
     sourcemap: !production,
     pure: production ? ["console.log", "console.time", "console.timeEnd"] : [],
     watch,
-    external: ["svelte", "anki"],
-    plugins: [
-        sveltePlugin({
-            preprocess: sveltePreprocess({
-                scss: {
-                    includePaths: ["anki/sass"],
-                },
-            }),
-        }),
-        sassPlugin(),
-    ],
+    external: ["anki"],
     loader: {
         ".png": "dataurl",
         ".svg": "text",

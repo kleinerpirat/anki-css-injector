@@ -1,0 +1,10 @@
+/* Field content CSS */
+
+anki-editable {
+    font-size: 4em;
+    font-weight: bold;
+}
+
+[mid*="1"] .fields {
+    color: yellow !important;
+}

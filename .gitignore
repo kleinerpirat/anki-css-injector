@@ -13,3 +13,6 @@ __pycache__
 # NPM / Typescript 
 node_modules
 yarn-error.log
+
+# IDE settings
+.vscode

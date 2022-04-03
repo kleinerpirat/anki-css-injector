@@ -1,3 +1,0 @@
-@mixin cols($count, $size) {
-    grid-template-columns: repeat($count, $size);
-}
