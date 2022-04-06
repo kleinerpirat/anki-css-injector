@@ -30,8 +30,7 @@ const watch = development
 
 
 
-const cssDir = `src/styles/${production ? "prod" : "test"}`
-
+const cssDir = `src/styles/${development ? "test" : "prod"}`
 /**
  * Stylesheets for user_files
  */
@@ -53,7 +52,7 @@ const options = {
     sourcemap: !production,
     pure: production ? ["console.log", "console.time", "console.timeEnd"] : [],
     watch,
-    external: ["anki"],
+    external: ["anki", "svelte"],
     loader: {
         ".png": "dataurl",
         ".svg": "text",

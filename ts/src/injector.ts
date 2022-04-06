@@ -1,43 +1,42 @@
-import * as NoteEditor from "anki/NoteEditor";
+import { shadowRoots } from "./utils";
 
 const StyleInjector = {
     addonPackage: "",
+    roots: <ShadowRoot[]>[],
+    
     injectCSS: (): void => {
-        [...document.getElementsByClassName("rich-text-editable")].forEach(
-            (richText) => {
-                const root = <ShadowRoot>richText!.shadowRoot;
-                const editable = <HTMLElement>root!.querySelector("anki-editable");
+        StyleInjector.roots.forEach((root) => {
+            const editable = root.querySelector("anki-editable") as HTMLElement;
 
-                if (!richText.hasAttribute("has-css-injected")) {
-                    editable.classList.add(...document.body.classList);
+            if (!editable.hasAttribute("has-css-injected")) {
+                editable.classList.add(...document.body.classList);
 
-                    const link = document.createElement("link");
-                    link.href = `/_addons/${StyleInjector.addonPackage}/user_files/field.css`;
-                    link.type = "text/css";
-                    link.rel = "stylesheet";
+                const link = document.createElement("link");
+                link.href = `/_addons/${StyleInjector.addonPackage}/user_files/field.css`;
+                link.type = "text/css";
+                link.rel = "stylesheet";
 
-                    root.insertBefore(link, editable);
-                    richText.setAttribute("has-css-injected", "");
-                }
-            },
-        );
+                root.insertBefore(link, editable);
+                editable.setAttribute("has-css-injected", "");
+            }
+        });
     },
-    updateMid: (mid: string): void => {
+    updateMid: async (mid: string): Promise<void> => {
+        document.documentElement.setAttribute("mid", mid);
+
         setTimeout(() => {
-            document.documentElement.setAttribute("mid", mid);
-            [...document.getElementsByClassName("rich-text-editable")].forEach(
-                (richText) => {
-                    const root = <ShadowRoot>richText!.shadowRoot;
-                    const editable = <HTMLElement>root!.querySelector("anki-editable");
-                    editable.setAttribute("mid", mid);
-                },
-            );
-        })
+            StyleInjector.roots.forEach((root) => {
+                const editable = root.querySelector("anki-editable") as HTMLElement;
+                editable.setAttribute("mid", mid);
+            });
+        });
     },
 };
 
-NoteEditor.lifecycle.onMount((): void => {
+(async () => {
+    StyleInjector.roots = await shadowRoots();
+    // timeout required because shadowRoots are not yet populated with editables
     setTimeout(() => StyleInjector.injectCSS());
-});
+})();
 
 globalThis.StyleInjector = StyleInjector;
