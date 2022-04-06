@@ -30,7 +30,7 @@ const watch = development
 
 
 
-const cssDir = `src/styles/${production ? "test" : "test"}`
+const cssDir = `src/styles/${production ? "prod" : "test"}`
 
 /**
  * Stylesheets for user_files
