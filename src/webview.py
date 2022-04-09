@@ -20,8 +20,8 @@ def load_packages(webcontent: WebContent, context: Any):
         webcontent.css.append(f"{base_path}/user_files/editor.css")
 
 
-def set_addon_package(editor: Editor):
-    editor.web.eval(f"StyleInjector.addonPackage = '{addon_package}'; ")
+def init_injector(editor: Editor):
+    editor.web.eval(f"StyleInjector.init('{addon_package}'); ")
 
 
 def update_mid(js: str, note: Note, editor: Editor):
@@ -30,5 +30,5 @@ def update_mid(js: str, note: Note, editor: Editor):
 
 def init_webview():
     webview_will_set_content.append(load_packages)
-    editor_did_init.append(set_addon_package)
+    editor_did_init.append(init_injector)
     editor_will_load_note.append(update_mid)

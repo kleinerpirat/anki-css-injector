@@ -5,8 +5,10 @@ import { tick } from "svelte/internal";
 export async function shadowRoots(): Promise<ShadowRoot[]> {
     return new Promise(async (resolve) => {
         NoteEditor.lifecycle.onMount(async () => {
-            while (!NoteEditor?.instances[0]?.fields[0]?.element) {
+            let ticks = 0;
+            while (!NoteEditor?.instances[0]?.fields[0]?.element && ticks < 10) {
                 await tick();
+                ticks++;
             }
             resolve(
                 await Promise.all(

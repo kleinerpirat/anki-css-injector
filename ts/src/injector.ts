@@ -3,7 +3,12 @@ import { shadowRoots } from "./utils";
 const StyleInjector = {
     addonPackage: "",
     roots: <ShadowRoot[]>[],
-    
+    init: async (addonPackage: string): Promise<void> => {
+        StyleInjector.addonPackage = addonPackage;
+        StyleInjector.roots = await shadowRoots();
+        // timeout required because shadowRoots are not yet populated with editables
+        setTimeout(() => StyleInjector.injectCSS());
+    },
     injectCSS: (): void => {
         StyleInjector.roots.forEach((root) => {
             const editable = root.querySelector("anki-editable") as HTMLElement;
@@ -32,11 +37,5 @@ const StyleInjector = {
         });
     },
 };
-
-(async () => {
-    StyleInjector.roots = await shadowRoots();
-    // timeout required because shadowRoots are not yet populated with editables
-    setTimeout(() => StyleInjector.injectCSS());
-})();
 
 globalThis.StyleInjector = StyleInjector;
