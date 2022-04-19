@@ -25,7 +25,7 @@ def init_injector(editor: Editor):
 
 
 def update_mid(js: str, note: Note, editor: Editor):
-    return js + f"StyleInjector.updateMid({note.mid});"
+    return js + f"""StyleInjector.updateMid('{note.note_type()["name"]}', '{note.mid}');"""
 
 
 def init_webview():

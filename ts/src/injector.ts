@@ -10,11 +10,17 @@ const StyleInjector = {
         setTimeout(() => StyleInjector.injectCSS());
     },
     injectCSS: (): void => {
-        StyleInjector.roots.forEach((root) => {
+        StyleInjector.roots.forEach((root, i) => {
             const editable = root.querySelector("anki-editable") as HTMLElement;
 
             if (!editable.hasAttribute("has-css-injected")) {
                 editable.classList.add(...document.body.classList);
+                editable.setAttribute("ord", (i + 1).toString());
+                editable.setAttribute(
+                    "field",
+                    root.host.closest(".editor-field")?.querySelector(".label-name")
+                        ?.innerHTML || "",
+                );
 
                 const link = document.createElement("link");
                 link.href = `/_addons/${StyleInjector.addonPackage}/user_files/field.css`;
@@ -26,12 +32,14 @@ const StyleInjector = {
             }
         });
     },
-    updateMid: async (mid: string): Promise<void> => {
+    updateMid: async (notetype: string, mid: string): Promise<void> => {
+        document.documentElement.setAttribute("notetype", notetype);
         document.documentElement.setAttribute("mid", mid);
 
         setTimeout(() => {
             StyleInjector.roots.forEach((root) => {
                 const editable = root.querySelector("anki-editable") as HTMLElement;
+                editable.setAttribute("notetype", notetype);
                 editable.setAttribute("mid", mid);
             });
         });
