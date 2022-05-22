@@ -1,31 +1,18 @@
 /* Field content CSS */
 
-anki-editable:after {
-    height: 100%;
-    content: "";
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    position: fixed;
-    z-index: -1;
-
-    background-color: var(--frame-bg);
-    opacity: 0.1;
-    background-image: linear-gradient(#444cf7 1px, transparent 1px),
-        linear-gradient(to right, #444cf7 1px, var(--frame-bg) 1px);
-    background-size: 20px 20px;
-}
-
 anki-editable {
-    cursor: text;
-    background: rgba(255, 255, 255, 0.25);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(2.5px);
-    -webkit-backdrop-filter: blur(2.5px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: darkslategray;
+}
+anki-editable[notetype="Tippy"][ord="1"] {
+    background: green;
+}
+anki-editable[notetype="Tippy"][ord="2"] {
+    background: yellow;
 }
 
-anki-mathjax {
-    color: slateblue;
+anki-editable[notetype="Gehölzkunde"][ord="1"] {
+    background: red;
+}
+anki-editable[notetype="Gehölzkunde"][ord="2"] {
+    background: blue;
 }
