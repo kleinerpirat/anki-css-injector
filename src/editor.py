@@ -8,10 +8,10 @@ from aqt.gui_hooks import (
 
 addon_package = mw.addonManager.addonFromModule(__name__)
 
-def inject(editor: Editor):
+def inject(editor: Editor) -> None:
     note = editor.note
     editor.web.eval(f"""StyleInjector.injectCSS('{addon_package}', '{note.note_type()["name"]}', '{note.mid}'); """)
 
 
-def init_editor():
+def init_editor() -> None:
     editor_did_load_note.append(inject)

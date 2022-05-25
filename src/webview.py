@@ -12,7 +12,7 @@ addon_package = mw.addonManager.addonFromModule(__name__)
 mw.addonManager.setWebExports(__name__, r"user_files/.*\.(css|js)|(web)/.*\.(js)")
 
 
-def load_packages(webcontent: WebContent, context: Any):
+def load_packages(webcontent: WebContent, context: Any) -> None:
     if isinstance(context, Editor):
         base_path = f"/_addons/{addon_package}"
 
@@ -20,5 +20,5 @@ def load_packages(webcontent: WebContent, context: Any):
         webcontent.css.append(f"{base_path}/user_files/editor.css")
 
 
-def init_webview():
+def init_webview() -> None:
     webview_will_set_content.append(load_packages)
