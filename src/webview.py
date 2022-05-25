@@ -9,7 +9,7 @@ from aqt.gui_hooks import (
     editor_will_load_note
 )
 addon_package = mw.addonManager.addonFromModule(__name__)
-mw.addonManager.setWebExports(__name__, r"user_files/.*\.(css|js)|(web)/.*\.(js)")
+mw.addonManager.setWebExports(__name__, r"user_files/.*\.(css|js|png|jpg|svg)|(web)/.*\.(js)")
 
 
 def load_packages(webcontent: WebContent, context: Any) -> None:
