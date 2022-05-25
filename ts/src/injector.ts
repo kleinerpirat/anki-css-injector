@@ -1,33 +1,51 @@
-import { iterateAnkiEditables } from "./utils";
+import { EditableAttributes, EditorAttributes } from "./types";
+import { setAttributes, injectStylesheet } from "./utils";
 
-const StyleInjector = {
-    injectCSS: async (addonPackage: string, notetype: string, mid: string): Promise<void> => {
-        document.documentElement.setAttribute("notetype", notetype);
-        document.documentElement.setAttribute("mid", mid);
+const StyleInjector: Record<string, any> = {
+    update: async function (
+        addonPackage: string,
+        attrs: EditorAttributes,
+    ): Promise<void> {
+        setAttributes(document.documentElement, { ...attrs });
 
-        let ord = 1;
-        for await (const editable of iterateAnkiEditables()) {
-            const root = editable.getRootNode() as ShadowRoot;
-            editable.classList.add(...document.body.classList);
-            editable.setAttribute("notetype", notetype);
-            editable.setAttribute("mid", mid);
-            editable.setAttribute("ord", (ord++).toString());
-            editable.setAttribute(
-                "field",
-                root.host.closest(".editor-field")?.querySelector(".label-name")
-                    ?.innerHTML || "",
+        if (attrs.pointVersion < 50) {
+            [...document.getElementById("fields")!.children].forEach(
+                (field: any, i) => {
+                    const editable = field.editingArea.editable;
+                    inject(addonPackage, editable, { ord: i + 1, ...attrs });
+                },
             );
-
-            if (!editable.hasAttribute("has-css-injected")) {
-                const link = document.createElement("link");
-                link.href = `/_addons/${addonPackage}/user_files/field.css`;
-                link.type = "text/css";
-                link.rel = "stylesheet";
-                root.insertBefore(link, editable);
-                editable.setAttribute("has-css-injected", "");
+        } else {
+            /* Thanks to Hikaru Y. for generously providing this async iterator! */
+            const { default: iterateAnkiEditables } = await import("./iterator");
+            for await (const [editable, i] of iterateAnkiEditables()) {
+                inject(addonPackage, editable, { ord: i + 1, ...attrs });
             }
         }
     },
 };
+
+function inject(
+    addonPackage: string,
+    editable: HTMLElement,
+    attrs: EditableAttributes,
+) {
+    const root = editable.getRootNode() as ShadowRoot;
+
+    editable.classList.add(...document.body.classList);
+
+    setAttributes(editable, {
+        field:
+            (attrs.pointVersion < 50
+                ? root.host.previousElementSibling?.getAttribute("title")
+                : root.host.closest(".editor-field")?.querySelector(".label-name")
+                      ?.innerHTML) || "",
+        ...attrs,
+    });
+
+    if (!root.querySelector("link[title*='CSS Injector']")) {
+        injectStylesheet(root, `/_addons/${addonPackage}/user_files/field.css`);
+    }
+}
 
 globalThis.StyleInjector = StyleInjector;
