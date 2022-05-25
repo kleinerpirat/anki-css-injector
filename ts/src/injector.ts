@@ -1,25 +1,19 @@
 import { iterateAnkiEditables } from "./utils";
 
 const StyleInjector = {
-    editables: <HTMLElement[]>[],
     initialized: false,
     addonPackage: "",
     init: async (addonPackage: string): Promise<void> => {
         if (addonPackage) StyleInjector.addonPackage = addonPackage;
-
-        /* Thanks to Hikaru Yoshiga for kindly providing this generator! */
-        for await (const editable of iterateAnkiEditables()) {
-            StyleInjector.editables.push(editable);
-        }
-
-        await StyleInjector.injectCSS();
         StyleInjector.initialized = true;
+        await StyleInjector.injectCSS();
     },
     injectCSS: async (): Promise<void> => {
-        StyleInjector.editables.forEach((editable, i) => {
+        let ord = 1;
+        for await (const editable of iterateAnkiEditables()) {
             const root = editable.getRootNode() as ShadowRoot;
             editable.classList.add(...document.body.classList);
-            editable.setAttribute("ord", (i + 1).toString());
+            editable.setAttribute("ord", (ord++).toString());
             editable.setAttribute(
                 "field",
                 root.host.closest(".editor-field")?.querySelector(".label-name")
@@ -34,7 +28,7 @@ const StyleInjector = {
                 root.insertBefore(link, editable);
                 editable.setAttribute("has-css-injected", "");
             }
-        });
+        }
     },
     refresh: async (notetype: string, mid: string): Promise<void> => {
         if (!StyleInjector.initialized) await StyleInjector.init("");
@@ -43,10 +37,10 @@ const StyleInjector = {
         document.documentElement.setAttribute("notetype", notetype);
         document.documentElement.setAttribute("mid", mid);
 
-        StyleInjector.editables.forEach((editable) => {
+        for await (const editable of iterateAnkiEditables()) {
             editable.setAttribute("notetype", notetype);
             editable.setAttribute("mid", mid);
-        });
+        }
     },
 };
 
