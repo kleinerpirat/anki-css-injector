@@ -45,7 +45,7 @@ const options = {
     entryPoints,
     outdir: "../dist/web",
     format: "iife",
-    target: "esnext",
+    target: "es2018",
     bundle: true,
     minify: false,
     treeShaking: production,
