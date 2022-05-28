@@ -9,11 +9,11 @@ export function setAttributes(
     }
 }
 
-export function injectStylesheet(root: ShadowRoot, url: string) {
+export function injectStylesheet(root: ShadowRoot, editable: HTMLElement, url: string) {
     const link = document.createElement("link");
-    link.title = "CSS Injector Field Styles"
+    link.title = "CSS Injector Field Styles";
     link.type = "text/css";
     link.rel = "stylesheet";
     link.href = url;
-    root.prepend(link);
+    root.insertBefore(link, editable);
 }

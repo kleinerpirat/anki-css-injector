@@ -44,7 +44,7 @@ function inject(
     });
 
     if (!root.querySelector("link[title*='CSS Injector']")) {
-        injectStylesheet(root, `/_addons/${addonPackage}/user_files/field.css`);
+        injectStylesheet(root, editable, `/_addons/${addonPackage}/user_files/field.css`);
     }
 }
 
