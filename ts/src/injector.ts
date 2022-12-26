@@ -34,12 +34,18 @@ function inject(
 
     editable.classList.add(...document.body.classList);
 
+    let fieldName: string | null | undefined;
+    if (attrs.pointVersion < 50) {
+        fieldName = root.host.previousElementSibling?.getAttribute("title");
+    } else if (attrs.pointVersion < 55) {
+        fieldName = root.host.closest(".editor-field")?.querySelector(".label-name")?.innerHTML;
+    } else { // >= 55
+        fieldName = root.host.closest(".field-container")?.querySelector(".label-name")?.innerHTML;
+    }
+    fieldName = fieldName || "";
+
     setAttributes(editable, {
-        field:
-            (attrs.pointVersion < 50
-                ? root.host.previousElementSibling?.getAttribute("title")
-                : root.host.closest(".editor-field")?.querySelector(".label-name")
-                      ?.innerHTML) || "",
+        field: fieldName,
         ...attrs,
     });
 
