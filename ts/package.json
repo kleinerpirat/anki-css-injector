@@ -1,6 +1,6 @@
 {
     "name": "anki-css-injector",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "private": true,
     "scripts": {
         "build": "cross-env NODE_ENV=production node esbuild.config.js",

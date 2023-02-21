@@ -45,7 +45,7 @@ const options = {
     entryPoints,
     outdir: "../dist/web",
     format: "iife",
-    target: "es2018",
+    target: ["es6", "chrome77"],
     bundle: true,
     minify: false,
     treeShaking: production,

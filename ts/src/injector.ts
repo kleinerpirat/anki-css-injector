@@ -1,50 +1,56 @@
-import { EditableAttributes, EditorAttributes } from "./types";
+import { get } from "svelte/store";
+import { EditableAttributes } from "./types";
 import { setAttributes, injectStylesheet } from "./utils";
 
+import type { EditorFieldAPI } from "@anki/editor/EditorField.svelte";
+// @ts-ignore
+import * as NoteEditor from "anki/NoteEditor";
+
+const addonPackage = document
+    .currentScript!.getAttribute("src")!
+    .match(/_addons\/(.+?)\//)![1];
+
 const StyleInjector: Record<string, any> = {
-    update: async function (
-        addonPackage: string,
-        attrs: EditorAttributes,
-    ): Promise<void> {
+    update: async function ({ fieldNames, attrs }): Promise<void> {
         setAttributes(document.documentElement, { ...attrs });
 
         if (attrs.pointVersion < 50) {
             [...document.getElementById("fields")!.children].forEach(
                 (field: any, i) => {
                     const editable = field.editingArea.editable;
-                    inject(addonPackage, editable, { ord: i + 1, ...attrs });
+                    inject(editable, { field: fieldNames[i], ord: i + 1, ...attrs });
                 },
             );
         } else {
-            /* Thanks to Hikaru Y. for generously providing this async iterator! */
-            const { default: iterateAnkiEditables } = await import("./iterator");
-            for await (const [editable, i] of iterateAnkiEditables()) {
-                inject(addonPackage, editable, { ord: i + 1, ...attrs });
+            while (!NoteEditor.instances[0]?.fields?.length) {
+                await new Promise(requestAnimationFrame);
             }
+            NoteEditor.instances[0].fields.forEach(
+                async (field: EditorFieldAPI, i: number) => {
+                    const richText = get(field.editingArea.editingInputs)[0];
+                    inject(await richText.element, {
+                        field: fieldNames[i],
+                        ord: i + 1,
+                        ...attrs,
+                    });
+                },
+            );
         }
     },
 };
 
-function inject(
-    addonPackage: string,
-    editable: HTMLElement,
-    attrs: EditableAttributes,
-) {
+function inject(editable: HTMLElement, attrs: EditableAttributes) {
+    editable.classList.add(...document.body.classList);
+    setAttributes(editable, attrs);
+
     const root = editable.getRootNode() as ShadowRoot;
 
-    editable.classList.add(...document.body.classList);
-
-    setAttributes(editable, {
-        field:
-            (attrs.pointVersion < 50
-                ? root.host.previousElementSibling?.getAttribute("title")
-                : root.host.closest(".editor-field")?.querySelector(".label-name")
-                      ?.innerHTML) || "",
-        ...attrs,
-    });
-
     if (!root.querySelector("link[title*='CSS Injector']")) {
-        injectStylesheet(root, editable, `/_addons/${addonPackage}/user_files/field.css`);
+        injectStylesheet(
+            root,
+            editable,
+            `/_addons/${addonPackage}/user_files/field.css`,
+        );
     }
 }
 
